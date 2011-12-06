@@ -28,7 +28,7 @@ class gravatar
 	protected static $gravatar_url			= 'http://www.gravatar.com/avatar/';
 	protected static $secure_gravatar_url	= 'https://secure.gravatar.com/avatar/';
 
-	public static function url($email, $params){
+	public static function url($email, $params = NULL){
 		
 		$url  = self::select_gravatar_url($params);
 		$url .= self::hash_email($email);
