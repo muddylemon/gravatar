@@ -12,6 +12,7 @@ Usage is as simple as:
 
 Or, if you're feeling more demanding:
 
+```php
     $email = filter_input(INPUT_GET,'e',FILTER_SANITIZE_EMAIL);
     
     $params = array(
@@ -23,4 +24,4 @@ Or, if you're feeling more demanding:
     $url = gravatar::url($email,$params);
     echo '<h1>'. $url . '</h1><img src="'. $url .'" />';
     
-    
+```
