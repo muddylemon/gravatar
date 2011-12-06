@@ -1,4 +1,4 @@
-gravatar
+#gravatar
 ================================
 
 gravatar is a simple and straightforward php class that will generate a gravatar url. 
