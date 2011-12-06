@@ -12,7 +12,7 @@ Usage is as simple as:
 
 Or, if you're feeling more demanding:
 
-```php
+``` php
     $email = filter_input(INPUT_GET,'e',FILTER_SANITIZE_EMAIL);
     
     $params = array(
