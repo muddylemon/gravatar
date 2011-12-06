@@ -6,13 +6,14 @@ gravatar is a simple and straightforward php class that will generate a gravatar
 
 Usage is as simple as: 
 
-    
-    $gravatar_url = gravatar::url('bob@bitcap.com');
-    
+```javascript
+$gravatar_url = gravatar::url('bob@bitcap.com');
+```
+
 
 Or, if you're feeling more demanding:
 
-``` php
+```javascript
     $email = filter_input(INPUT_GET,'e',FILTER_SANITIZE_EMAIL);
     
     $params = array(
@@ -23,5 +24,4 @@ Or, if you're feeling more demanding:
     );
     $url = gravatar::url($email,$params);
     echo '<h1>'. $url . '</h1><img src="'. $url .'" />';
-    
 ```
