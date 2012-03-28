@@ -26,5 +26,5 @@ Or, if you're feeling more demanding:
     
 ```
 
-For more information and commentary, see the [blog post](http://muddylemon.com/2011/12/php-gravatar-class/) that
+For more information and commentary, see the blog post [PHP Gravatar Class ](http://muddylemon.com/2011/12/php-gravatar-class/) that
 describes its creation.
