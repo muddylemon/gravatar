@@ -60,11 +60,14 @@ class gravatar
      */
 
     private static function params($params){
+        // params are optional, if not supplied, just bail
+        if (!is_array($params)) return;
+        
         $valid = array();
         foreach ($params as $key => $value) {
             $valid[substr($key,0,1)] => self::validate($key,$value);
         }
-        return $valid;
+        return '?' . http_build_query($valid);
     }
     
     private static function validate($key,$value){
