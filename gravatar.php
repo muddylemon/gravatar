@@ -15,22 +15,10 @@
  *      size - int 1 to 512
  *      rating - like movie ratings
  *      image - one of these: '404','mm','identicon','monsterid','wavatar','retro'
- *      secure - true or false, return the https version or not
  * 
  */
 class gravatar 
 {
-
-    protected $default_size                 = 80;
-    protected $default_rating               = 'g';
-    protected $default_image                = false;
-    
-    protected $use_secure_url               = false;
-    
-    protected static $valid_ratings         = array('g','pg','r','x');
-    protected static $valid_images          = array('404','mm','identicon','monsterid','wavatar','retro');
-    protected static $gravatar_url          = 'http://www.gravatar.com/avatar/';
-    protected static $secure_gravatar_url   = 'https://secure.gravatar.com/avatar/';
 
     /**
      * the public function of the class, returns the url of the gravatar image 
@@ -42,34 +30,24 @@ class gravatar
      */
     public static function url($email, $params = NULL){
         
-        $url  = self::select_gravatar_url($params);
-        $url .= self::hash_email($email);
-        $url .= self::append_params($params);
-        
-        return $url;
+        return sprintf('%s.gravatar.com/avatar/%s?%s',
+                        self::url_prefix(),
+                        self::hashed($email),
+                        self::params($params)
+                       );
     }
-
-    /**
-     * Returns either the secure url or non-secure depending on 
-     * the param 'secure'
-     * @param array $params 
-     * @return string
-     */
-    private static function select_gravatar_url($params){
-        if (isset($params['secure']) && $params['secure'] == true) {
-            return self::$secure_gravatar_url;
+        private static function url_prefix(){
+            return ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://secure': 'http://www');
         }
-        return self::$gravatar_url;
-    }
 
-    /**
-     * Returns the md5 hash of the email supplied
-     * @param string $email 
-     * @return string
-     */
-    private static function hash_email($email) {
-        return hash('md5',trim(strtolower($email)));
-    }
+        /**
+         * Returns the md5 hash of the email supplied
+         * @param string $email 
+         * @return string
+         */
+        private static function hashed($email) {
+            return hash('md5',trim(strtolower($email)));
+        }
 
     /**
      * Creates an array of parameters used in the gravatar query string
@@ -80,76 +58,26 @@ class gravatar
      * @param array $params 
      * @return string
      */
-    private static function append_params($params){
+
+    private static function params($params){
+        $valid = array();
+        foreach ($params as $key => $value) {
+            $valid[substr($key,0,1)] => self::validate($key,$value);
+        }
+        return $valid;
+    }
+    
+    private static function validate($key,$value){
+        if ($key == 'size') {
+            return ($value > 512 || $value < 1) ? 80 : $value;
+        }
         
-        $appended = array(  's' => self::valid('size',$params),
-                            'r' => self::valid('rating',$params),
-                            'd' => self::valid('image',$params)   );
-
-        return '?' . http_build_query($appended);
-    }
-
-    /**
-     * Evaluates the parameters passed in and, depending on the type 
-     * of validation requested, returns the value or the default value
-     * 
-     * @param string $type 
-     * @param array $params 
-     * @return string
-     */
-    private static function valid($type,$params){
+        if ($key == 'rating') {
+            return (in_array($value, array('g','pg','r','x'))) ? $value : 'g';
+        }
         
-        switch ($type) {
-            case 'size':
-                return self::valid_size($params);
-                break;
-            case 'rating':
-                return self::valid_rating($params);
-                break;
-            case 'image':
-                return self::valid_image($params);
-                break;
+        if ($key == 'image') {
+            return (in_array($value,array('404','mm','identicon','monsterid','wavatar','retro'))) ? $value : '404';
         }
-
-    }
-
-    /**
-     * Evaluates the value of the 'size' parameter and 
-     * returns the value or the default
-     * @param array $params 
-     * @return string
-     */
-    private static function valid_size($params) {
-        $size = (int) $params['size'];
-        if ($size > 512 || $size < 1) {
-            return self::$default_size;
-        }
-        return $params['size'];
-    }
-
-    /**
-     * Evaluates the value of the 'rating' parameter and 
-     * returns the value or the default
-     * @param array $params 
-     * @return string
-     */
-    private static function valid_rating($params){
-        if (!isset($params['rating'] || !in_array($params['rating'], self::$valid_ratings)){
-            return self::$default_rating;
-        }
-        return $params['rating'];
-    }
-
-    /**
-     * Evaluates the value of the 'image' parameter and 
-     * returns the value or the default
-     * @param array $params 
-     * @return string
-     */
-    private static function valid_image($params) {
-        if (!isset($params['image'] || !in_array($params['image'],self::$valid_images)) {
-            return self::$default_image;
-        }
-        return $params['image'];
     }
 }
